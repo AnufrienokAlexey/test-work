@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+  <name>Foto_in_admin</name>
+  <version>1.0</version>
+  <author>Drujban</author>
+  <code>foto_in_admin</code>
+  <file path="admin/controller/sale/order.php">
+    <operation error="abort">
+      <search>
+        <![CDATA[
+        public function info() {
+        ]]>
+      </search>
+      <add position="after">
+        <![CDATA[
+        $this->document->addStyle('view/javascript/cloud-zoom/cloud-zoom.css');
+        $this->document->addScript('view/javascript/cloud-zoom/cloud-zoom.1.0.2.js');
+        ]]>
+      </add>
+    </operation>
+    <operation error="abort">
+      <search index="1">
+        <![CDATA[
+        $data['column_product'] = $this->language->get('column_product');
+        ]]>
+      </search>
+      <add position="before">
+        <![CDATA[
+        $data['column_foto'] = $this->language->get('column_foto');
+        ]]>
+      </add>
+    </operation>
+    <operation error="abort">
+      <search>
+      	<![CDATA[
+        $data['products'][] = array(
+        ]]>
+      </search>
+      <add position="before">
+      	<![CDATA[
+        $this->load->model('tool/image');
+        $this->load->model('catalog/product');
+        $product_info = $this->model_catalog_product->getProduct($product['product_id']);
+        $image = $this->model_tool_image->resize($product_info['image'], 50, 50);
+        $image_big = $this->model_tool_image->resize($product_info['image'], 400, 400);
+       ]]>
+      </add>
+    </operation>  
+    <operation error="abort">
+      <search>
+        <![CDATA[
+        $data['products'][] = array(
+        ]]>
+      </search>
+      <add position="replace" offset="10">
+        <![CDATA[
+        $data['products'][] = array(
+        'order_product_id' => $product['order_product_id'],
+        'product_id'       => $product['product_id'],
+        'name'             => $product['name'],
+        'image'            => $image,
+        'image_big'        => $image_big,
+        'model'            => $product['model'],
+        'option'           => $option_data,
+        'quantity'         => $product['quantity'],
+        'price'            => $this->currency->format($product['price'] + ($this->config->get('config_tax') ? $product['tax'] : 0), $order_info['currency_code'], $order_info['currency_value']),
+        'total'            => $this->currency->format($product['total'] + ($this->config->get('config_tax') ? ($product['tax'] * $product['quantity']) : 0), $order_info['currency_code'], $order_info['currency_value']),
+        'href'           => $this->url->link('catalog/product/edit', 'token=' . $this->session->data['token'] . '&product_id=' . $product['product_id'], true),
+        'href_shop'        => HTTP_CATALOG . 'index.php?route=product/product&product_id=' . $product['product_id']
+        );
+        ]]>
+      </add>
+    </operation>
+  </file>
+  <file path="admin/language/ru-ru/sale/order.php">
+  	<operation error="abort">
+  		<search>
+  			<![CDATA[
+        $_['column_order_id']                         = 'Заказ №';
+        ]]>
+  		</search>
+  		<add position="before">
+  			<![CDATA[
+        $_['column_foto'] 		                        = 'Фото товара';
+        ]]>	
+  		</add>
+  	</operation>
+  </file>
+  <file path="admin/view/template/sale/order_info.tpl">
+    <operation error="abort">
+      <search>
+        <![CDATA[
+        <td class="text-left"><?php echo $column_product; ?></td>
+        ]]>
+      </search>
+      <add position="before">
+        <![CDATA[
+        <td class="text-left"><?php echo $column_foto; ?></td>
+        ]]>
+      </add>
+    </operation>
+    <operation error="abort">
+      <search>
+        <![CDATA[
+        <?php foreach ($products as $product) { ?>
+        ]]>
+      </search>
+      <add position="replace" offset="16">
+        <![CDATA[
+            <?php foreach ($products as $product) { ?>
+            <tr>
+              <td class="zoom" onclick="window.open('<?php echo $product['href_shop']; ?>', '_blank')"><a href="<?php echo $product['image_big']; ?>" class="cloud-zoom"><img class="zoom" src="<?php echo $product['image']; ?>"></a></td>
+              <td class="text-left"><a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a>
+                <?php foreach ($product['option'] as $option) { ?>
+                <br />
+                <?php if ($option['type'] != 'file') { ?>
+                &nbsp;<small> - <?php echo $option['name']; ?>: <?php echo $option['value']; ?></small>
+                <?php } else { ?>
+                &nbsp;<small> - <?php echo $option['name']; ?>: <a href="<?php echo $option['href']; ?>"><?php echo $option['value']; ?></a></small>
+                <?php } ?>
+                <?php } ?></td>
+              <td class="text-left"><?php echo $product['model']; ?></td>
+              <td class="text-right"><?php echo $product['quantity']; ?></td>
+              <td class="text-right"><?php echo $product['price']; ?></td>
+              <td class="text-right"><?php echo $product['total']; ?></td>
+            </tr>
+            <?php } ?>
+        ]]>
+      </add>
+    </operation>
+    <operation error="abort">
+      <search>
+        <![CDATA[
+       <?php foreach ($totals as $total) { ?>
+        ]]>
+      </search>
+      <add position="replace" offset="5">
+        <![CDATA[
+        <?php foreach ($totals as $total) { ?>
+            <tr>
+              <td colspan="5" class="text-right"><?php echo $total['title']; ?></td>
+              <td class="text-right"><?php echo $total['text']; ?></td>
+            </tr>
+            <?php } ?>
+        ]]>
+      </add>
+    </operation>
+  </file>
+</modification>

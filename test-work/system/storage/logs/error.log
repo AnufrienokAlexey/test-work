@@ -1,0 +1,4 @@
+2023-01-28 22:16:12 - PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: Interlace handling should be turned on when using png_read_image in C:\OpenServer\domains\test-work\system\library\image.php on line 24
+2023-01-28 22:26:02 - PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: Interlace handling should be turned on when using png_read_image in C:\OpenServer\domains\test-work\system\library\image.php on line 24
+2023-01-28 22:35:42 - PHP Notice:  Undefined variable: language in C:\OpenServer\domains\test-work\admin\view\template\extension\modification_form.tpl on line 36
+2023-01-28 22:35:42 - PHP Notice:  Trying to access array offset on value of type null in C:\OpenServer\domains\test-work\admin\view\template\extension\modification_form.tpl on line 36
